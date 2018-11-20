@@ -13,4 +13,3 @@ echo "Installing supervisor"
 apt-get install -y -q supervisor
 apt-get install -y virtualenv python-pip
 pip install --upgrade pip
-pip install -r /vagrant/requirements.txt

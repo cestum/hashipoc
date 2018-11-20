@@ -1,5 +1,6 @@
 #!/bin/bash
 
+pip install -r /vagrant/requirements.txt
 cp /vagrant/app.py /usr/local/bin
 
 echo "Running nomad job ..."

@@ -13,15 +13,16 @@ def hello_world():
         arg = sys.argv[1]
     token = os.getenv('VAULT_TOKEN', None)
     data = {}
+    err = None
     if token:
         try:
             client = hvac.Client(url='http://localhost:8200', token=os.environ['VAULT_TOKEN'])
-            data = client.read('secret/password')
-            if 'data' in data and 'value' in data['data']:
-                data = data['data']['value']
-        except:
+            data = client.read('secret/data/password')
+            if data is not None and 'data' in data and 'data' in data['data'] and 'value' in data['data']['data']:
+                data = data['data']['data']['value']
+        except Exception as err:
             data = {}
-    return '[%s] Hello, World: %s with a vault token of: %s and secret: %s\n' % (port, arg, token, data)
+    return '[%s] Hello, World: %s with a vault token of: %s and secret: %s (err=%s)\n' % (port, arg, token, data, err)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=os.getenv('NOMAD_PORT_http', 8000))

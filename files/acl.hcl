@@ -1,8 +1,8 @@
-path "secret/*" {
+path "secret/data/*" {
   capabilities = ["create"]
 }
 
-path "secret/password" {
+path "secret/data/password" {
   capabilities = ["read"]
 }
 
