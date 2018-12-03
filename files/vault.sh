@@ -7,6 +7,8 @@ rm -rf /var/log/vault /etc/vault /var/vault
 
 VAULT_VERSION=0.11.5
 VAULT_ARCH=linux_amd64
+VAULT_ZIP=vault_${VAULT_VERSION}_${VAULT_ARCH}.zip
+VAULT_ZIP_FLAG=${VAULT_ZIP}.valid
 VAULT_ADMIN_TOKEN=1e9e1f5a-3c23-a5d2-d308-ed2c3dd541c4
 export VAULT_ADDR=http://localhost:8200
 
@@ -17,10 +19,16 @@ echo "VAULT_ADDR=$VAULT_ADDR" >> /etc/environment
 echo "VAULT_ADMIN_TOKEN=$VAULT_ADMIN_TOKEN" >> /etc/environment
 
 echo "Getting vault binary"
-wget -q https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_${VAULT_ARCH}.zip -O /tmp/vault_${VAULT_VERSION}_${VAULT_ARCH}.zip
+
 cd /tmp
-unzip -o /tmp/vault_${VAULT_VERSION}_${VAULT_ARCH}.zip
+if test -e "$VAULT_ZIP_FLAG"
+then zflag="-z $VAULT_ZIP_FLAG"
+else zflag=
+fi
+curl -s $zflag -R -O https://releases.hashicorp.com/vault/${VAULT_VERSION}/${VAULT_ZIP}
+unzip -o /tmp/$VAULT_ZIP
 mv vault /usr/local/bin/vault
+touch $VAULT_ZIP_FLAG
 
 mkdir -p /var/log/vault
 mkdir -p /etc/vault

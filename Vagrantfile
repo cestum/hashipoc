@@ -13,6 +13,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "haproxy",         type: "shell", path: "files/haproxy.sh"
   config.vm.provision "consul-template", type: "shell", path: "files/consul-template.sh"
   config.vm.provision "dnsmasq",         type: "shell", path: "files/dnsmasq.sh"
+  config.vm.provision "go",              type: "shell", path: "files/go.sh"
+  config.vm.provision "cfssl",           type: "shell", path: "files/cfssl.sh"
   config.vm.provision "vault",           type: "shell", path: "files/vault.sh"
   config.vm.provision "nomad",           type: "shell", path: "files/nomad.sh"
   config.vm.provision "vault-nomad",     type: "shell", path: "files/vault-nomad.sh"
