@@ -2,7 +2,7 @@
 
 set -e
 
-GO_VERSION=1.11.2
+GO_VERSION=1.13.1
 GO_ARCH=linux-amd64
 GO_TGZ=go${GO_VERSION}.${GO_ARCH}.tar.gz
 GO_TGZ_FLAG=go${GO_VERSION}.${GO_ARCH}.valid

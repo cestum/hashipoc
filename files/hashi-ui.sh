@@ -1,8 +1,9 @@
 #!/bin/bash
 
-HASHI_UI_VERSION=0.23.0
+HASHI_UI_VERSION=1.1.2
 HASHI_UI_ARCH=linux-amd64
 
+echo $NOMAD_ADDR
 echo "Getting hashi-ui binary"
 wget -q https://github.com/jippi/hashi-ui/releases/download/v${HASHI_UI_VERSION}/hashi-ui-${HASHI_UI_ARCH} -O /tmp/hashi-ui-${HASHI_UI_ARCH}
 chmod 0755 /tmp/hashi-ui-${HASHI_UI_ARCH}

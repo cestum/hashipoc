@@ -8,7 +8,13 @@ HashiPOC stands for [Hashicorp](https://www.hashicorp.com/) Proof Of Concept. Th
 * A working [Vagrant](https://www.vagrantup.com/) installation
 
 # Quickstart
+Generate CA cert (self-signed) for nodes
 
+```
+cd files/security
+cfssl print-defaults csr | cfssl gencert -initca - | cfssljson -bare nomad-ca
+
+```
 Bring the vagrant instance up.
 
 ```

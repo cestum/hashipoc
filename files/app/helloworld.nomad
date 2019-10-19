@@ -8,7 +8,7 @@ job "helloworld" {
     canary = 2
   }
   group "hello-group" {
-    count = 2
+    count = 1
     task "hello-task" {
       driver = "exec"
       vault {

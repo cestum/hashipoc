@@ -16,7 +16,7 @@ def hello_world():
     err = None
     if token:
         try:
-            client = hvac.Client(url='http://localhost:8200', token=os.environ['VAULT_TOKEN'])
+            client = hvac.Client(url='http://active.vault.service.consul:8200', token=os.environ['VAULT_TOKEN'])
             data = client.read('secret/data/password')
             if data is not None and 'data' in data and 'data' in data['data'] and 'value' in data['data']['data']:
                 data = data['data']['data']['value']
