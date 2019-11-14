@@ -3,6 +3,11 @@
 CONSUL_VERSION=1.6.1
 CONSUL_ARCH=linux_amd64
 
+echo "CNI plugin"
+curl -L -o cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v0.8.3/cni-plugins-linux-amd64-v0.8.3.tgz
+sudo mkdir -p /opt/cni/bin
+sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
+
 echo "Getting consul binary"
 
 wget -q https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_${CONSUL_ARCH}.zip -O /tmp/consul_${CONSUL_VERSION}_${CONSUL_ARCH}.zip
@@ -26,7 +31,13 @@ cat << EOF > /etc/consul/config.json
   "client_addr": "0.0.0.0",
   "bind_addr": "0.0.0.0",
   "log_level": "INFO",
-  "ui": true
+  "ui": true,
+  "ports": {
+    "grpc": 8502
+  },
+  "connect": {
+     "enabled": true
+  }
 }
 EOF
 

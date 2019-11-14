@@ -1,0 +1,148 @@
+
+job "trains-server" {
+  datacenters = ["dc1"]
+
+  #API server
+  group "apiserver" {
+    network {
+      mode = "bridge"
+    }
+
+    service {
+      name = "trains-server-api"
+      port = "8008"
+
+      connect {
+        sidecar_service {}
+      }
+    }
+
+    env {
+    	ELASTIC_SERVICE_HOST = "${NOMAD_UPSTREAM_ADDR_trains_server_elasticsearch}"
+    	MONGODB_SERVICE_HOST = "${NOMAD_UPSTREAM_ADDR_trains_server_mongo}"
+    	REDIS_SERVICE_HOST = "${NOMAD_UPSTREAM_ADDR_trains_server_redis}"
+	}
+
+    task "apiserver" {
+      driver = "docker"
+
+      config {
+        image = "allegroai/trains:latest"
+      }
+    }
+  }
+
+  #elastic search
+  group "elasticsearch" {
+    network {
+      mode = "bridge"
+    }
+
+    service {
+      name = "trains-server-elasticsearch"
+      port = "9200"
+
+      connect {
+        sidecar_service {}
+      }
+    }
+
+	env {
+		ES_JAVA_OPTS = "-Xms2g -Xmx2g"
+		bootstrap.memory_lock = "true"
+		cluster.name = "trains"
+		cluster.routing.allocation.node_initial_primaries_recoveries = "500"
+		discovery.zen.minimum_master_nodes = "1"
+		http.compression_level = "7"
+		node.ingest = "true"
+		node.name = "trains"
+		reindex.remote.whitelist = "*.*"
+		script.inline = "true"
+		script.painless.regex.enabled = "true"
+		script.update = "true"
+		thread_pool.bulk.queue_size = "2000"
+		thread_pool.search.queue_size = "10000"
+		xpack.monitoring.enabled = "false"
+		xpack.security.enabled = "false"
+
+	}
+
+    task "apiserver" {
+      driver = "docker"
+
+      config {
+        image = "docker.elastic.co/elasticsearch/elasticsearch:5.6.16"
+        command = "elasticsearch"
+        args = [ 
+        	"-Ebootstrap.memory_lock=true",
+        	"-Ecluster.name=${NOMAD_META_ES_CLUSTER_NAME}",
+        	"-Ecluster.routing.allocation.node_initial_primaries_recoveries=500",
+        	"-Ediscovery.zen.minimum_master_nodes=1",
+        	"-Ehttp.compression_level=7",
+        	"-Enode.ingest=true",
+        	"-Enode.name=${NOMAD_META_ES_CLUSTER_NAME}",
+        	"-Ereindex.remote.whitelist='*.*'",
+        	"-Escript.inline=true",
+        	"-Escript.painless.regex.enabled=true",
+			"-Escript.update=true",
+			"-Ethread_pool.bulk.queue_size=2000",
+			"-Ethread_pool.search.queue_size=10000",
+			"-Expack.monitoring.enabled=false",
+			"-Expack.security.enabled=false"
+        ]
+      }
+    }
+  }
+
+  group "fileserver" {
+  }
+
+  group "mongo" {
+
+  }
+
+  group "redis" {
+  }
+
+  group "webserver" {
+  }
+
+  group "dashboard" {
+    network {
+      mode = "bridge"
+
+      port "http" {
+        static = 9002
+        to     = 9002
+      }
+    }
+
+    service {
+      name = "count-dashboard"
+      port = "9002"
+
+      connect {
+        sidecar_service {
+          proxy {
+            upstreams {
+              destination_name = "count-api"
+              local_bind_port  = 8080
+            }
+          }
+        }
+      }
+    }
+
+    task "dashboard" {
+      driver = "docker"
+
+      env {
+        COUNTING_SERVICE_URL = "http://${NOMAD_UPSTREAM_ADDR_count_api}"
+      }
+
+      config {
+        image = "hashicorpnomad/counter-dashboard:v1"
+      }
+    }
+  }
+}

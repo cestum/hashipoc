@@ -1,0 +1,6 @@
+{
+  "box": "bento/ubuntu-16.04",
+  "box_version": "201910.21.0",
+  "name": "hashipoc",
+  "url": "https://vagrantcloud.com/bento/boxes/ubuntu-16.04/versions/201910.21.0/providers/vmware_desktop.box"
+}

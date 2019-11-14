@@ -5,7 +5,7 @@ rm -rf /var/log/nomad /etc/nomad /var/nomad
 
 set -e
 
-NOMAD_VERSION=0.9.6
+NOMAD_VERSION=0.10.1
 NOMAD_ARCH=linux_amd64
 NOMAD_ZIP=nomad_${NOMAD_VERSION}_${NOMAD_ARCH}.zip 
 NOMAD_ZIP_FLAG=${NOMAD_ZIP}.valid

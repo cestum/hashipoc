@@ -21,9 +21,9 @@ tls {
 }
 data_dir = "/opt/nomad/data/client"
 
-consul {
-  address = "127.0.0.1:8500"
-}
+#consul {
+#  address = "127.0.0.1:8500"
+#}
 
 vault { #client dont need vault token
   enabled = true

@@ -48,6 +48,8 @@ path "*" {
     capabilities = ["create", "read", "update", "delete", "list", "sudo"]
 }' | vault policy write vault-admin -
 
+vault auth disable userpass >/dev/null 2>&1
+
 vault auth enable userpass
 vault write auth/userpass/users/vault password=vault policies=vault-admin
 

@@ -89,20 +89,21 @@ Vagrant.configure(2) do |config|
   config.vm.provision "consul-template", type: "shell", path: "files/consul/consul-template.sh"
 
   # Increase memory for Parallels Desktop
-  config.vm.provider "parallels" do |p, o|
-    p.memory = "2048"
+  config.vm.provider "parallels" do |p|
+    p.memory = 4096
+    p.cpus = 3
   end
 
   # Increase memory for Virtualbox
   config.vm.provider "virtualbox" do |vb|
         vb.cpus = "2"
-        vb.memory = "2048"
+        vb.memory = "4096"
   end
 
   # Increase memory for VMware
   ["vmware_fusion", "vmware_workstation"].each do |p|
     config.vm.provider p do |v|
-      v.vmx["memsize"] = "2048"
+      v.vmx["memsize"] = "4096"
     end
   end
 end
