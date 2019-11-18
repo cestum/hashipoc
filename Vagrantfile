@@ -14,11 +14,16 @@ Vagrant.configure(2) do |config|
 
     node1.vm.network :forwarded_port, guest: 8500, host: 8500, auto_correct: true
     node1.vm.network :forwarded_port, guest: 4646, host: 4646, auto_correct: true
-    node1.vm.network :forwarded_port, guest: 8080, host: 8080, auto_correct: true
     node1.vm.network :forwarded_port, guest: 9998, host: 9998, auto_correct: true
     node1.vm.network :forwarded_port, guest: 9999, host: 9999, auto_correct: true
-    node1.vm.network :forwarded_port, guest: 80,   host: 9080, auto_correct: true
-    node1.vm.network :forwarded_port, guest: 443,  host: 9443, auto_correct: true
+
+    node1.vm.network :forwarded_port, guest: 8888, host: 8888, auto_correct: true
+    node1.vm.network :forwarded_port, guest: 8008, host: 8008, auto_correct: true
+    node1.vm.network :forwarded_port, guest: 8080, host: 8080, auto_correct: true
+    node1.vm.network :forwarded_port, guest: 8081, host: 8081, auto_correct: true
+    node1.vm.network :forwarded_port, guest: 27017, host: 27017, auto_correct: true
+    node1.vm.network :forwarded_port, guest: 9200, host: 9200, auto_correct: true
+    node1.vm.network :forwarded_port, guest: 6379, host: 6379, auto_correct: true
 
     node1.vm.provision "check vault and start nomad", type: "shell", inline: "sudo supervisorctl start consul-template-vault"
     #config.vm.provision "app", type: "shell", path: "files/app/application.sh"
@@ -44,6 +49,15 @@ Vagrant.configure(2) do |config|
     node2.vm.network :forwarded_port, guest: 8500, host: 8501, auto_correct: true
     node2.vm.network :forwarded_port, guest: 8200, host: 8201, auto_correct: true
     node2.vm.network :forwarded_port, guest: 4646, host: 5646, auto_correct: true
+
+    node2.vm.network :forwarded_port, guest: 8888, host: 8888, auto_correct: true
+    node2.vm.network :forwarded_port, guest: 8008, host: 8008, auto_correct: true
+    node2.vm.network :forwarded_port, guest: 8080, host: 8080, auto_correct: true
+    node2.vm.network :forwarded_port, guest: 8081, host: 8081, auto_correct: true
+    node2.vm.network :forwarded_port, guest: 27017, host: 27017, auto_correct: true
+    node2.vm.network :forwarded_port, guest: 9200, host: 9200, auto_correct: true
+    node2.vm.network :forwarded_port, guest: 6379, host: 6379, auto_correct: true
+
     node2.vm.provision "check vault and start nomad", type: "shell", inline: "sudo supervisorctl start consul-template-vault"
   end
 
@@ -57,6 +71,14 @@ Vagrant.configure(2) do |config|
     node3.vm.network :forwarded_port, guest: 8500, host: 8502, auto_correct: true
     node3.vm.network :forwarded_port, guest: 8200, host: 8200, auto_correct: true
     node3.vm.network :forwarded_port, guest: 4646, host: 6646, auto_correct: true
+
+    node3.vm.network :forwarded_port, guest: 8888, host: 8888, auto_correct: true
+    node3.vm.network :forwarded_port, guest: 8008, host: 8008, auto_correct: true
+    node3.vm.network :forwarded_port, guest: 8080, host: 8080, auto_correct: true
+    node3.vm.network :forwarded_port, guest: 8081, host: 8081, auto_correct: true
+    node3.vm.network :forwarded_port, guest: 27017, host: 27017, auto_correct: true
+    node3.vm.network :forwarded_port, guest: 9200, host: 9200, auto_correct: true
+    node3.vm.network :forwarded_port, guest: 6379, host: 6379, auto_correct: true
     ### Start Vault on Node3
     node3.vm.provision "mysql", type: "shell", path: "files/mysql/setup.sh"
     node3.vm.provision "start vault", type: "shell", inline: "sudo supervisorctl restart vault"

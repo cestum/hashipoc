@@ -4,9 +4,10 @@ job "trains-server" {
 
   #API server
   group "apiserver" {
-    network {
-      mode = "bridge"
-    }
+      port "http" {
+	     static = 8888
+	     to     = 8888
+	   }       
 
     service {
       name = "trains-server-api"

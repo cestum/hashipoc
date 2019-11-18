@@ -1,4 +1,3 @@
-
 job "trains-server" {
   datacenters = ["dc1"]
 
@@ -13,6 +12,20 @@ job "trains-server" {
 
   #API server
   group "apiserver" {
+
+    affinity {
+      attribute = "${attr.unique.hostname}"
+      value ="node2"
+      weight = 80
+    }
+    update {
+        max_parallel     = 1
+        min_healthy_time = "30s"
+        healthy_deadline = "5m"
+        auto_revert      = true
+        auto_promote     = false
+    }
+    
     network {
       mode = "bridge"
       port "http" {
@@ -57,29 +70,19 @@ job "trains-server" {
       config {
         image = "allegroai/trains:latest"
         command = "apiserver"
-        port_map {
-			    apiserver = 8008
-		    }         
-        network_mode="host"
         volumes = [
               "/opt/trains/logs:/var/log/trains",
               "/opt/trains/config:/opt/trains/config",
-              "/opt/trains/server:/opt/trains/server"
+              "/opt/trains/server-config:/opt/trains/server/config/default"
             ]
       }
 
-      template {
-        source = "/opt/trains/config/default/hosts.conf.tpl"
-        destination = "/opt/trains/server/config/default/hosts.conf"
-        change_mode = "noop"
-      }
+      #template {
+      #  source = "/opt/trains/config/default/hosts.conf.tpl"
+      #  destination = "/opt/trains/server/config/default/hosts.conf"
+      #  change_mode = "signal"
+      #}
 
-      resources {
-        network {
-          mbits = 20
-          port "apiserver" {}
-        }
-	    } 
     }
 
   }
@@ -110,10 +113,6 @@ job "trains-server" {
       config {
         image = "docker.elastic.co/elasticsearch/elasticsearch:5.6.16"
         command = "elasticsearch"
-        port_map {
-          elasticsearch = 9200
-        }  
-        network_mode="host"        
         args = [ 
         	"-Ebootstrap.memory_lock=true",
         	"-Ecluster.name=${NOMAD_META_ES_CLUSTER_NAME}",
@@ -149,19 +148,17 @@ job "trains-server" {
 		resources {
 			cpu = 1512
         	memory = 3096
-			network {
-			  mbits = 20
-			  port "elasticsearch" {}
-			}
 		}  
 
     }
   }
 
-
-
-
   group "fileserver" {
+    affinity {
+      attribute = "${attr.unique.hostname}"
+      value ="node2"
+      weight = 50
+    }    
     network {
       mode = "bridge"
       port "http" {
@@ -182,27 +179,15 @@ job "trains-server" {
 
     task "fileserver" {
       driver = "docker"
-
- 
       config {
         image = "allegroai/trains:latest"
-        command = "fileserver"
-		port_map {
-			fileserver = 8081
-		}         
-		network_mode="bridge"  
+        command = "fileserver"       
         volumes = [
-        	"/opt/trains/logs:/var/log/trains",
-        	"/opt/trains/data/fileserver:/mnt/fileserver"
+          "/opt/trains/logs:/var/log/trains",
+          "/opt/trains/data/fileserver:/mnt/fileserver"
         ]
       }
-
-     resources {
-	    network {
-	      mbits = 20
-	      port "fileserver" {}
-	    }
-	  }  
+  
     }
   }
 
@@ -233,21 +218,11 @@ job "trains-server" {
 
       config {
         image = "mongo:3.6.5"
-        port_map {
-      		mongo = 27017
-    	}   
-    	network_mode="bridge"     
         volumes = [
         	"/opt/trains/data/mongo/db:/data/db",
         	"/opt/trains/data/mongo/configdb:/data/configdb"
         ]
-      }
-	  resources {
-	    network {
-	      mbits = 20
-	      port "mongo" {}
-	    }
-	  }      
+      }   
     }
   }
 
@@ -279,29 +254,24 @@ job "trains-server" {
       config {
         image = "redis:5.0"
 
-        port_map {
-      		redis = 6379
-    	}
-		network_mode="bridge"
         volumes = [
         	"/opt/trains/data/redis:/data"
         ]
       }
-	  resources {
-	    network {
-	      mbits = 20
-	      port "redis" {}
-	    }
-	  }
     }
   }
 
   group "webserver" {
+    affinity {
+      attribute = "${attr.unique.hostname}"
+      value ="node2"
+      weight = 80
+    }
     network {
       mode = "bridge"
       port "http" {
 	     static = 8080
-	     to     = 8080
+	     to     = 80
 	   }       
     }
 
@@ -321,22 +291,10 @@ job "trains-server" {
       config {
         image = "allegroai/trains:latest"
         command = "webserver"
-		network_mode="bridge"
-        port_map {
-      		webserver = 80
-    	}
         volumes = [
         	"/opt/trains/logs:/var/log/trains"
         ]
       }
-
-
-     resources {
-	    network {
-	      mbits = 20
-	      port "webserver" { }
-	    }
-	  }  
     }
   }
 }
