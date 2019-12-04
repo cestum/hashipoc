@@ -3,6 +3,7 @@
 #Set DEBIAN_FRONTEND as noninteractive. This is required to avoid the error
 # dpkg-preconfigure: unable to re-open stdin: No such file or directory
 export DEBIAN_FRONTEND=noninteractive
+add-apt-repository -y ppa:openjdk-r/ppa
 
 apt-get update
 
@@ -11,7 +12,8 @@ apt-get install -y \
     ca-certificates \
     curl \
     gnupg-agent \
-    software-properties-common
+    software-properties-common \
+    openjdk-8-jdk
 
 #install docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -23,6 +25,11 @@ add-apt-repository \
 apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io
 usermod -G docker -a vagrant
+
+#install java
+echo "Installing java 8"
+JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+
 
 echo "Installing unzip and jq"
 apt-get install -y -q unzip jq

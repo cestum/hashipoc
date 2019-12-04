@@ -28,5 +28,3 @@ curl -sfX PUT 127.0.0.1:8500/v1/kv/service/vault/vault_token_for_nomad -d $VAULT
 
 #now ready to configure nomad with vault 
 #apply nomad-vault.hcl configuration (currently in consul-template)
-#config already copied in consul-template.sh
-supervisorctl start consul-template-vault

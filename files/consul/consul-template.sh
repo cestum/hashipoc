@@ -15,8 +15,8 @@ mkdir -p /etc/consul-template
 cp /vagrant/consul-templates/*.conf /etc/supervisor/conf.d/
 
 supervisorctl reread
-supervisorctl update consul-template-haproxy
-supervisorctl start consul-template-haproxy
+#supervisorctl update consul-template-haproxy
+#supervisorctl start consul-template-haproxy
 
 
 #don't apply  consul-template-vault till a vault token is generated for nomad

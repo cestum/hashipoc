@@ -25,7 +25,10 @@ Vagrant.configure(2) do |config|
     node1.vm.network :forwarded_port, guest: 9200, host: 9200, auto_correct: true
     node1.vm.network :forwarded_port, guest: 6379, host: 6379, auto_correct: true
 
-    node1.vm.provision "check vault and start nomad", type: "shell", inline: "sudo supervisorctl start consul-template-vault"
+    #wait for vault to be ready
+    node1.vm.provision "start vault-ready", type: "shell", inline: "sudo supervisorctl start vault-ready"
+    node1.vm.provision "check vault-ready and start nomad", type: "shell", inline: "sudo supervisorctl start consul-template-vault"
+
     #config.vm.provision "app", type: "shell", path: "files/app/application.sh"
     node1.vm.post_up_message = "
     Nomad has been provisioned and is available at the following web address:
@@ -58,7 +61,9 @@ Vagrant.configure(2) do |config|
     node2.vm.network :forwarded_port, guest: 9200, host: 9200, auto_correct: true
     node2.vm.network :forwarded_port, guest: 6379, host: 6379, auto_correct: true
 
-    node2.vm.provision "check vault and start nomad", type: "shell", inline: "sudo supervisorctl start consul-template-vault"
+    #wait for vault to be ready
+    node2.vm.provision "start vault-ready", type: "shell", inline: "sudo supervisorctl start vault-ready"
+    node2.vm.provision "check vault-ready and start nomad", type: "shell", inline: "sudo supervisorctl start consul-template-vault"
   end
 
   config.vm.define "node3" do |node3|
@@ -81,14 +86,17 @@ Vagrant.configure(2) do |config|
     node3.vm.network :forwarded_port, guest: 6379, host: 6379, auto_correct: true
     ### Start Vault on Node3
     node3.vm.provision "mysql", type: "shell", path: "files/mysql/setup.sh"
-    node3.vm.provision "start vault", type: "shell", inline: "sudo supervisorctl restart vault"
+    node3.vm.provision "start nomad server", type: "shell", inline: "sudo supervisorctl restart nomad"
+    node3.vm.provision "start vault server", type: "shell", inline: "sudo supervisorctl restart vault"
     node3.vm.provision "shell", path: "files/vault/vault-unseal.sh",
       privileged: true,
       env: {"PATH" => "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin"}
     node3.vm.provision "shell", path: "files/vault/vault-nomad.sh",
       privileged: true,
       env: {"PATH" => "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin"}
-    #node3.vm.provision "restart nomad", type: "shell", inline: "sudo supervisorctl restart nomad"
+    node3.vm.provision "start vault-ready", type: "shell", inline: "sudo supervisorctl start vault-ready"
+    node3.vm.provision "check vault-ready and start nomad", type: "shell", inline: "sudo supervisorctl start consul-template-vault"
+
   end
 
   config.vm.synced_folder "files", "/vagrant"
@@ -101,13 +109,11 @@ Vagrant.configure(2) do |config|
   config.vm.provision "dnsmasq",         type: "shell", path: "files/dnsmasq/dnsmasq.sh"
   config.vm.provision "vault",           type: "shell", path: "files/vault/vault.sh"
   config.vm.provision "nomad",           type: "shell", path: "files/nomad/nomad.sh"
+  config.vm.provision "spark",           type: "shell", path: "files/spark/spark.sh"
 
   config.vm.provision "start consul", type: "shell", inline: "sudo supervisorctl start consul"
   #wait for consul leader script
   config.vm.provision "start consul-online", type: "shell", inline: "sudo supervisorctl start consul-online"
-  #wait for vault to be ready
-  config.vm.provision "start nomad", type: "shell", inline: "sudo supervisorctl start vault-ready"
-  
   config.vm.provision "consul-template", type: "shell", path: "files/consul/consul-template.sh"
 
   # Increase memory for Parallels Desktop

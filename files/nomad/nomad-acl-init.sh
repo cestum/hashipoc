@@ -2,10 +2,6 @@
 
 
 
-
-
-
-
 INSTANCE_IP="$(/sbin/ifconfig eth1 | grep 'inet addr:' | awk '{print substr($2,6)}')"
 NOMAD_PORT=4646
 export NOMAD_ADDR=https://$INSTANCE_IP:$NOMAD_PORT
